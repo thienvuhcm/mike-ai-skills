@@ -1,0 +1,75 @@
+---
+name: mybatis
+description: Use when you need to write, review, debug, configure, or refactor Java persistence code that uses MyBatis 3 — the SQL-mapping framework that binds Java methods to hand-written SQL via XML mapper files or annotations (you keep full control of the SQL; MyBatis maps parameters and result sets). Covers the entire official Reference Documentation. Getting started & core objects — installation, building a SqlSessionFactory from mybatis-config.xml or from a Java Configuration class, opening a SqlSession (try-with-resources), XML mapper vs annotation mappers, and the critical scope/lifecycle rules (SqlSessionFactoryBuilder = method scope, SqlSessionFactory = application/singleton, SqlSession = request/method and never shared between threads, mapper = method scope). Configuration XML — the mandatory element order (properties, settings, typeAliases, typeHandlers, objectFactory, plugins, environments, databaseIdProvider, mappers); externalizing properties (resource/url/inline + ${name:default}); the full settings table (cacheEnabled, lazyLoadingEnabled, aggressiveLazyLoading, mapUnderscoreToCamelCase, useGeneratedKeys, autoMappingBehavior, autoMappingUnknownColumnBehavior, defaultExecutorType, localCacheScope, jdbcTypeForNull, callSettersOnNulls, returnInstanceForEmptyRow, defaultEnumTypeHandler, logImpl, shrinkWhitespacesInSql, useActualParamName, defaultSqlProviderType, etc. with defaults and since-versions); built-in type aliases; custom TypeHandler (BaseTypeHandler, @MappedTypes/@MappedJdbcTypes, enum EnumTypeHandler vs EnumOrdinalTypeHandler); objectFactory; plugins/Interceptor (@Intercepts/@Signature on Executor/ParameterHandler/ResultSetHandler/StatementHandler); environments (transactionManager JDBC/MANAGED, dataSource UNPOOLED/POOLED/JNDI with all pool properties); databaseIdProvider (DB_VENDOR); and the four mapper-registration styles (resource/url/class/package). Mapper XML — select/insert/update/delete statement attributes (parameterType, resultType, resultMap, flushCache, useCache, timeout, fetchSize, statementType, resultSetType, useGeneratedKeys, keyProperty/keyColumn, databaseId, affectData); #{} PreparedStatement parameters (javaType, jdbcType, typeHandler, numericScale, mode IN/OUT/INOUT for stored procedures) vs ${} string substitution and the SQL-injection rule; <selectKey order=BEFORE/AFTER>; reusable <sql>/<include> with <property>; resultMap (id/result, auto-mapping NONE/PARTIAL/FULL, <constructor>/<idArg>/<arg>, <association> has-one and <collection> has-many via nested select or nested results, lazy vs eager fetchType, columnPrefix, notNullColumn, multiple ResultSets, <discriminator>/<case> + extends); and the <cache> element (eviction LRU/FIFO/SOFT/WEAK, flushInterval, size, readOnly, blocking, custom Cache) + <cache-ref>. Dynamic SQL — <if>, <choose>/<when>/<otherwise>, <where> (strips leading AND/OR), <set> (strips trailing comma), <trim> (prefix/prefixOverrides/suffix/suffixOverrides), <foreach> (collection/item/index/open/close/separator/nullable for List/array/Map.Entry, IN clauses and batch insert), <bind>, the _databaseId multi-vendor variable, OGNL test expressions, <script> in annotations, and pluggable LanguageDriver/@Lang. Java API — SqlSessionFactoryBuilder.build() overloads, SqlSessionFactory.openSession (autoCommit, Connection, TransactionIsolationLevel, ExecutorType SIMPLE/REUSE/BATCH), the full SqlSession surface (selectOne/selectList/selectMap/selectCursor/select+ResultHandler, insert/update/delete, RowBounds, commit/rollback(force), flushStatements/BatchResult, clearCache, getConnection, getMapper), local-cache semantics (SESSION vs STATEMENT, don't mutate returned objects), mapper interfaces + @Param, and the complete annotation set (@Select/@Insert/@Update/@Delete, @Options, @Results/@Result/@One/@Many, @ConstructorArgs/@Arg, @TypeDiscriminator/@Case, @MapKey, @SelectKey, @ResultMap/@ResultType, @Flush, @CacheNamespace/@CacheNamespaceRef/@Property, and the SQL providers @SelectProvider/@InsertProvider/@UpdateProvider/@DeleteProvider with the org.apache.ibatis.jdbc.SQL builder, ProviderMethodResolver, ProviderContext, and global defaultSqlProviderType). Targets MyBatis 3.5.x (documentation snapshot 3.5.19); features carry since-version notes (e.g. ${name:default} 3.4.2, defaultEnumTypeHandler 3.4.5, defaultSqlProviderType 3.5.6, shrinkWhitespacesInSql 3.5.5, nullableOnForEach 3.5.9). Triggers for requests such as: Create a MyBatis mapper for this query / map this result set to a POJO; Why is my column not mapping (mapUnderscoreToCamelCase / resultMap); Return the auto-generated primary key after insert (useGeneratedKeys / selectKey); Build a dynamic WHERE / IN clause (where/if/foreach); Map a one-to-many or one-to-once (association/collection, nested select vs join, N+1); Fix SQL injection from ${}; Configure mybatis-config.xml / settings / a custom TypeHandler / a plugin; Set up the SqlSessionFactory and manage SqlSession lifecycle; Batch inserts with ExecutorType.BATCH; Write a SQL-provider / annotation-only mapper; Integrate MyBatis with Spring Boot.
+license: Apache-2.0
+metadata:
+  author: MyBatis project (mybatis.org, Apache-2.0); skill synthesized from the official MyBatis 3 Reference Documentation
+  version: 1.0.0
+  source_version: MyBatis 3.5.x (documentation snapshot 3.5.19, last published 2025-01-02)
+  source: https://mybatis.org/mybatis-3/
+---
+# MyBatis 3 — SQL Mapping for Java with Full Control of the SQL
+
+Write, review, debug, and refactor MyBatis persistence code by applying the official *MyBatis 3 Reference Documentation*. MyBatis is **not** an ORM that hides SQL: you write the SQL yourself (in XML mapper files or annotations), and MyBatis handles the tedious JDBC plumbing — binding method parameters into a `PreparedStatement` and mapping `ResultSet` rows back to Java objects (`resultType`/`resultMap`). You declare a **mapper interface** whose methods correspond to **mapped statements**; MyBatis generates the proxy that runs the right SQL. The result is type-safe data access where the SQL stays visible, reviewable, and tunable.
+
+**Target version:** MyBatis **3.5.x** (`org.mybatis:mybatis`), documentation snapshot **3.5.19** (last published 2025-01-02). Many capabilities carry a **Since** note (e.g. `${name:default}` since 3.4.2, `defaultEnumTypeHandler` since 3.4.5, `defaultSqlProviderType` since 3.5.6, `shrinkWhitespacesInSql` since 3.5.5) — see the reference's since-version table. MyBatis is strongly backward compatible within 3.5.x.
+
+**What is covered in this Skill?** (organized by the 5 chapters of the official docs + an annotation chapter)
+
+- **Setup & core objects** (Getting Started): installation; building `SqlSessionFactory` from `mybatis-config.xml` or a Java `Configuration`; opening a `SqlSession` with try-with-resources; XML mapper vs annotation mapper; the **scope & lifecycle** rules (Builder → method, Factory → application singleton, **Session → request/method, never shared across threads**, Mapper → method)
+- **Configuration XML** (Configuration): mandatory element order; `properties` (resource/url/inline + `${name:default}`); the full `settings` table with defaults and since-versions; `typeAliases` (built-in + package scan); `typeHandlers` (`BaseTypeHandler`, `@MappedTypes`/`@MappedJdbcTypes`, enum name vs ordinal); `objectFactory`; `plugins`/`Interceptor` (`@Intercepts`/`@Signature`); `environments` (`transactionManager` JDBC/MANAGED, `dataSource` UNPOOLED/POOLED/JNDI); `databaseIdProvider`; and the four `mappers` registration styles
+- **Mapper XML — statements & parameters** (Mapper XML Files): `select`/`insert`/`update`/`delete` attributes; `#{}` (`PreparedStatement`, `javaType`/`jdbcType`/`typeHandler`/`numericScale`/`mode`) vs `${}` (string substitution + SQL-injection rule); generated keys (`useGeneratedKeys`/`keyProperty`, `<selectKey order>`); reusable `<sql>`/`<include>`
+- **Mapper XML — result maps & caching** (Mapper XML Files): `resultMap` (`id`/`result`, auto-mapping NONE/PARTIAL/FULL, `<constructor>`, `<association>` has-one, `<collection>` has-many — nested select vs nested results, `fetchType`, `columnPrefix`, multiple ResultSets, `<discriminator>`, `extends`); `<cache>` (eviction/flushInterval/size/readOnly/blocking, custom `Cache`) + `<cache-ref>`
+- **Dynamic SQL** (Dynamic SQL): `<if>`, `<choose>/<when>/<otherwise>`, `<where>`, `<set>`, `<trim>`, `<foreach>`, `<bind>`, `_databaseId`, `<script>` for annotations, pluggable `LanguageDriver`/`@Lang`
+- **Java API** (Java API): `SqlSessionFactoryBuilder`/`openSession` overloads (`ExecutorType`, autoCommit, isolation); the full `SqlSession` surface (`selectOne`/`selectList`/`selectMap`/`selectCursor`/`select`+`ResultHandler`, `RowBounds`, `commit`/`rollback`, `flushStatements`/`BatchResult`, `clearCache`); local-cache semantics; mapper interfaces + `@Param`
+- **Annotation-based mappers** (Java API): `@Select`/`@Insert`/`@Update`/`@Delete`, `@Options`, `@Results`/`@Result`/`@One`/`@Many`, `@ConstructorArgs`/`@Arg`, `@MapKey`, `@SelectKey`, `@ResultMap`/`@ResultType`, `@Flush`, `@CacheNamespace`; SQL providers (`@SelectProvider` … + the `SQL` builder class, `ProviderMethodResolver`, `defaultSqlProviderType`)
+
+## Constraints
+
+MyBatis runs hand-written SQL against a real database. The **build, the running query, and the database schema** are the sources of truth — assumptions about column-to-property mapping or SQL behavior must be verified, not guessed.
+
+- **MANDATORY**: Compile after every change (`./mvnw compile` / `./gradlew compileJava`). XML mapper parsing errors, unknown-statement-id errors, and result-mapping errors surface at startup or first use, not while editing.
+- **VERIFY**: Run the project's tests after changes; do not claim a mapper works until it compiles and the relevant tests pass. Report failures honestly with the actual SQL / stack trace.
+- **`#{}` NOT `${}` FOR VALUES**: Use `#{}` (a bound `PreparedStatement` parameter) for every user-supplied value. Reserve `${}` (raw string substitution) for structural fragments you control (table/column names, sort direction) — never for user input, or you create a **SQL-injection** hole. When `${}` is unavoidable for dynamic identifiers, validate against an allow-list.
+- **SESSION LIFECYCLE**: A `SqlSession` is **not thread-safe**. Open it in request/method scope, use try-with-resources, and never store it in a static or instance field. Build the `SqlSessionFactory` **once** (application singleton). In Spring/Spring Boot, let `mybatis-spring` manage sessions and transactions — do not open sessions manually.
+- **READ THE GENERATED SQL & MAPPING**: Enable SQL logging (`logImpl`, or the framework's logger) to see the exact SQL and bound parameters. For mapping bugs, check column labels vs property names, `mapUnderscoreToCamelCase`, and `autoMappingBehavior` before changing the `resultMap`.
+- **VERSION AWARENESS**: Gate newer settings/features on the project's MyBatis version (see the since-version table). Don't rely on `${name:default}` before 3.4.2, `defaultEnumTypeHandler` before 3.4.5, `defaultSqlProviderType` before 3.5.6, etc.
+- **N+1 AWARENESS**: `<association>`/`<collection>` via **nested `select`** issues one extra query per parent row (N+1). Prefer **nested results** (a join + a single `resultMap`) for collections you always need; use nested `select` with `fetchType="lazy"` only when the relation is rarely traversed.
+- **GENERATED KEYS**: To read an auto-increment id back, set `useGeneratedKeys="true"` + `keyProperty`. For sequences/non-auto-increment, use `<selectKey order="BEFORE">` (sequence) or `order="AFTER"` (identity). The key is written into the parameter object — pass a mutable bean.
+- **DON'T MUTATE RETURNED OBJECTS**: With `localCacheScope=SESSION` (default) and a read/write second-level cache, MyBatis may hand back cached references. Treat query results as read-only unless you understand the cache implications.
+- **BEFORE APPLYING**: Read the relevant chapter section in the reference for the exact attributes, defaults, and the pitfall.
+
+## When to use this skill
+
+- Write or review a mapper (XML or annotations) that maps a query to a POJO/record, a `Map`, or a primitive
+- Diagnose "column not mapped" / "result property not set" / `TooManyResultsException` / unknown-statement-id errors
+- Return an auto-generated primary key after `insert` (`useGeneratedKeys` / `<selectKey>`)
+- Build a **dynamic** query — conditional `WHERE`, `IN (...)` from a collection, dynamic `UPDATE` `SET`, multi-tenant/multi-vendor SQL
+- Map a **one-to-one** (`<association>`) or **one-to-many** (`<collection>`) — and decide nested select vs join, eager vs lazy, fix N+1
+- Fix a `${}` SQL-injection risk; choose `#{}` vs `${}` correctly
+- Configure `mybatis-config.xml`: `settings`, a custom `TypeHandler`, an enum handler, a plugin/`Interceptor`, the data source/pool, or `databaseIdProvider`
+- Set up the `SqlSessionFactory`, get the `SqlSession` lifecycle right, or batch writes with `ExecutorType.BATCH`
+- Write an annotation-only mapper or a dynamic **SQL provider** (`@SelectProvider` + the `SQL` builder)
+- Integrate MyBatis with Spring Boot (`mybatis-spring-boot-starter`) — mapper scanning, `@Transactional`
+
+## Workflow
+
+1. **Confirm the version and that the project compiles**
+
+   Determine the MyBatis version (`pom.xml` / `gradlew dependencies`) and whether `mybatis-spring`/`mybatis-spring-boot-starter` is in use. Run the build and stop if it does not compile. Gate every recommendation on whether the feature exists in that version (since-version table).
+
+2. **Read the reference and analyze the statement/mapping**
+
+   Read `references/mybatis.md`. Map each requirement or smell to a specific practice by chapter section and title (e.g. "4.3 Map a one-to-many with `<collection>` — prefer nested results over nested select", "3.3 Use `#{}` for values, `${}` only for trusted identifiers"). Inspect the SQL, the column labels, and the target type's fields/constructor.
+
+3. **Apply the idiomatic MyBatis solution**
+
+   Keep the SQL explicit and reviewable. Prefer `#{}` binding, `resultMap`/auto-mapping over manual row handling, and declarative dynamic-SQL tags over string concatenation. Get generated keys, null handling, and N+1 right. Cite the practice you applied by chapter section and title.
+
+4. **Recompile, inspect the SQL, and verify**
+
+   Recompile, enable SQL logging to confirm the exact statement and bound parameters, and run tests. For mapping or ambiguity problems, resolve them explicitly (`resultMap`, column aliases, `@Param`) rather than loosening global settings. Re-verify before declaring done.
+
+## Reference
+
+For all features across the 6 chapters — with rationale, idiomatic vs anti-pattern examples (and the generated SQL / mapped result where relevant), the full `settings` keys table, built-in type aliases and type handlers, the feature→since-version table, and Maven/Gradle/Spring-Boot setup notes and consolidated pitfalls — see [references/mybatis.md](references/mybatis.md).

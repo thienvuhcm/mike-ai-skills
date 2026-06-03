@@ -319,7 +319,7 @@ List<Apple> heavy = filterApples(inventory, Apple::isHeavyApple);
 static List<Apple> filterGreenApples(List<Apple> inventory) {
     List<Apple> result = new ArrayList<>();
     for (Apple apple : inventory) {
-        if ("green".equals(apple.getColor())) result.add(apple);   // only this line differs
+        if (GREEN.equals(apple.getColor())) result.add(apple);   // only this line differs
     }
     return result;
 }
@@ -490,9 +490,9 @@ List<Apple> result = filter(inventory, (Apple a) -> a.getWeight() > 150);
 
 ```java
 // A new method every time the requirement changes:
-filterApplesByColor(inventory, "green");
+filterApplesByColor(inventory, GREEN);
 filterApplesByWeight(inventory, 150);
-filterApplesByColorAndWeight(inventory, "green", 150);
+filterApplesByColorAndWeight(inventory, GREEN, 150);
 ```
 
 ### [2.2] Never use a boolean flag to pick which attribute a method filters on
@@ -503,18 +503,18 @@ Description: A `filter(inventory, "green", true)` style flag is unreadable at th
 **Good example:**
 
 ```java
-List<Apple> greens = filter(inventory, apple -> "green".equals(apple.getColor()));
+List<Apple> greens = filter(inventory, apple -> GREEN.equals(apple.getColor()));
 List<Apple> heavy  = filter(inventory, apple -> apple.getWeight() > 150);
 ```
 
 **Bad example:**
 
 ```java
-public static List<Apple> filterApples(List<Apple> inv, String color, int weight, boolean flag) {
+public static List<Apple> filterApples(List<Apple> inv, Color color, int weight, boolean flag) {
     // flag == true -> filter by color; flag == false -> filter by weight. Unreadable and rigid.
     return null;
 }
-List<Apple> greens = filterApples(inventory, "green", 0, true);
+List<Apple> greens = filterApples(inventory, GREEN, 0, true);
 ```
 
 ### [2.3] Model selection criteria as a predicate interface (Strategy pattern)
@@ -584,7 +584,7 @@ public static <T> List<T> filter(List<T> list, Predicate<T> p) {
     return result;
 }
 
-List<Apple> reds    = filter(apples,  a -> "red".equals(a.getColor()));
+List<Apple> reds    = filter(apples,  a -> RED.equals(a.getColor()));
 List<Integer> evens = filter(numbers, n -> n % 2 == 0);
 ```
 
@@ -1064,9 +1064,9 @@ Description: On data sorted by the predicate, `takeWhile` stops at the first non
 **Good example:**
 
 ```java
-// menu is sorted by calories ascending
-List<Dish> firstLow  = menu.stream().takeWhile(d -> d.getCalories() < 320).collect(toList());
-List<Dish> restHigh  = menu.stream().dropWhile(d -> d.getCalories() < 320).collect(toList());
+// specialMenu is sorted by calories ascending
+List<Dish> firstLow  = specialMenu.stream().takeWhile(d -> d.getCalories() < 320).collect(toList());
+List<Dish> restHigh  = specialMenu.stream().dropWhile(d -> d.getCalories() < 320).collect(toList());
 List<Dish> twoHigh   = menu.stream().filter(d -> d.getCalories() > 300).limit(2).collect(toList());
 ```
 
@@ -1074,7 +1074,7 @@ List<Dish> twoHigh   = menu.stream().filter(d -> d.getCalories() > 300).limit(2)
 
 ```java
 // filter scans the entire sorted stream even though everything after the boundary is irrelevant.
-List<Dish> firstLow = menu.stream().filter(d -> d.getCalories() < 320).collect(toList());
+List<Dish> firstLow = specialMenu.stream().filter(d -> d.getCalories() < 320).collect(toList());
 ```
 
 ### [5.3] Transform and extract data with map
