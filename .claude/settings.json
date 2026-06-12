@@ -6,43 +6,6 @@
     "defaultMode": "acceptEdits"
   },
   "hooks": {
-    "UserPromptSubmit": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash /c/Users/admin/.claude/scripts/setup-project-skills.sh"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Grep|Glob|Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"C:/Users/admin/.claude/hooks/gitnexus/gitnexus-hook.cjs\"",
-            "timeout": 10,
-            "statusMessage": "Enriching with GitNexus graph context..."
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"C:/Users/admin/.claude/hooks/gitnexus/gitnexus-hook.cjs\"",
-            "timeout": 10,
-            "statusMessage": "Checking GitNexus index freshness..."
-          }
-        ]
-      }
-    ],
     "PermissionRequest": [
       {
         "matcher": "ExitPlanMode",
@@ -77,39 +40,6 @@
           {
             "type": "command",
             "command": "echo {\"hookSpecificOutput\":{\"hookEventName\":\"PermissionRequest\",\"decision\":{\"behavior\":\"allow\"}}}"
-          }
-        ]
-      }
-    ],
-    "TeammateIdle": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '\"[\" + (now | todate) + \"] IDLE: \" + (.teammate.name // \"unknown\")' >> /c/Users/admin/.claude/team-activity.log 2>/dev/null; exit 0"
-          }
-        ]
-      }
-    ],
-    "TaskCreated": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '\"[\" + (now | todate) + \"] CREATED: \" + (.task.title // \"unknown\")' >> /c/Users/admin/.claude/team-activity.log 2>/dev/null; exit 0"
-          }
-        ]
-      }
-    ],
-    "TaskCompleted": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '\"[\" + (now | todate) + \"] DONE: \" + (.task.title // \"unknown\")' >> /c/Users/admin/.claude/team-activity.log 2>/dev/null; exit 0"
           }
         ]
       }
