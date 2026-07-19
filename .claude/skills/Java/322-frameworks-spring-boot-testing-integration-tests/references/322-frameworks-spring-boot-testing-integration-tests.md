@@ -4,7 +4,7 @@ description: Use when you need to write or improve integration tests — includi
 license: Apache-2.0
 metadata:
   author: Juan Antonio Breña Moral
-  version: 0.16.0
+  version: 0.17.0
 ---
 # Spring Boot Integration Testing
 
@@ -419,7 +419,7 @@ class MyServiceWithPerMethodContainerIT {
     @BeforeEach
     void startEach() {
         redis = new GenericContainer<>(DockerImageName.parse("redis:6-alpine")).withExposedPorts(6379);
-        redis.start();  // Docker pull + startup on every test method — very slow
+        redis.start();  // image download and startup on every test method is very slow
     }
 
     @Test
