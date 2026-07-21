@@ -1,9 +1,9 @@
 ""
 ## Model Assignment Rules
-- Architecture decisions and reviews: Use Fable (Fable 5 - claude-fable-5) 
+- Architecture decisions and reviews: Use Opus (Opus 4.8 - claude-opus-4-8) 
 - Implementation tasks (new features, refactors): Use Sonnet (Sonnet 5 - claude-sonnet-5) 
 - Simple edits, formatting, renaming: Use Haiku (Haiku 4.5 - claude-haiku-4-5)
-- Security-sensitive changes: Always escalate to (Fable 5 - claude-fable-5) 
+- Security-sensitive changes: Always escalate to Opus (Opus 4.8 - claude-opus-4-8)
  for review
 Never use old version model. Always use the newest version.
 
