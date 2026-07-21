@@ -1,4 +1,12 @@
-"" 
+""
+## Model Assignment Rules
+- Architecture decisions and reviews: Use Fable (Fable 5 - claude-fable-5) 
+- Implementation tasks (new features, refactors): Use Sonnet (Sonnet 5 - claude-sonnet-5) 
+- Simple edits, formatting, renaming: Use Haiku (Haiku 4.5 - claude-haiku-4-5)
+- Security-sensitive changes: Always escalate to (Fable 5 - claude-fable-5) 
+ for review
+Never use old version model. Always use the newest version.
+
 # CLAUDE.md
 
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
