@@ -1,3 +1,7 @@
+# Global Claude Code Instructions
+
+- **Bilingual feedback** — when giving feedback (comments, reviews, evaluation of code/approach/results), ALWAYS write bilingually: Vietnamese paragraph first, followed immediately by the English version (not Vietnamese-only). Applies to feedback content only, not the entire response.
+
 ## Workflow rules (always do)
 
 - Short greeting → reply directly, no tools/agents/skills/GitNexus/OpenSpec. Overrides all other rules. (Hook-level token usage from UserPromptSubmit can't be disabled via CLAUDE.md — only via hook config or CLAUDE_TOOLCHECK=off.)
