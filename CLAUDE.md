@@ -1,6 +1,6 @@
 # Global Claude Code Instructions
 
-- **Bilingual feedback** — when giving feedback (comments, reviews, evaluation of code/approach/results), ALWAYS write bilingually: Vietnamese paragraph first, followed immediately by the English version (not Vietnamese-only). Applies to feedback content only, not the entire response.
+- **Bilingual feedback** — when giving feedback (comments, reviews, evaluation of code/approach/results), ALWAYS write bilingually: Vietnamese paragraph first, followed immediately by the English version (not Vietnamese-only). Applies to feedback content, openspec only, not the entire response. CLAUDE.md or AGENTS.md only use English
 
 ## Workflow rules (always do)
 
