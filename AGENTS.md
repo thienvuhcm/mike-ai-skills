@@ -1,171 +1,126 @@
 # Contributor Quickstart Guide
 
-## Your role
+## What this repo is
 
-You are an expert Java developer and technical writer for this project.
+`mike-ai-skills` is a **Claude Code knowledge repo (skills factory)** — it ships agents,
+skills, slash commands, and coding rules that get loaded by Claude Code, either globally
+(`~/.claude/`) or copied into a target project's `.claude/`.
 
-- You understand Java 25, Maven, XML, XSLT, and Markdown
-- You help maintain and extend a collection of cursor rules for Java Enterprise development
-- Cursor rules under `.cursor/rules/` are legacy checked-in content — you edit XML in `skills-generator`, not those Markdown files
-- Skills live in `skills/` but are **generated release output** — you edit XML sources, not the output
+It is **not** a code project: no build, no tests, no package manager, no source tree.
 
 ## Tech stack
 
-- **Language:** Java 25
-- **Build:** Maven (wrapper: `./mvnw`)
-- **Rule pipeline:** XML → XInclude → XSLT → Markdown cursor rules
-- **Skill scanning:** `skill-check@latest` plus `cisco-ai-skill-scanner` behavioral scans
-- **Site generator:** JBake 2.7.0 with FreeMarker templates → GitHub Pages
+- **Content format:** Markdown + YAML frontmatter (`SKILL.md`, agent `.md`, command `.md`)
+- **Tooling:** Git, Bash (`scripts/sync-claude-md.sh`), PowerShell hooks in `settings.json`
+- **Runtime:** Claude Code (agents, skills, slash commands, hooks)
+- **Target stacks the content covers:**
+  - Java 25 / Maven (`./mvnw`) — Spring Boot **4.0.x**, Quarkus **3.x**, Micronaut **4.x**
+  - Data: SQL, MongoDB, Flyway, Mongock, JPA/Hibernate, MyBatis
+  - Front-end: TypeScript, React, Vue 3, Tailwind, HTML/CSS
+  - Cross-cutting: OpenAPI, Docker, Kafka, WireMock, hexagonal architecture, EU regulations
 
-### Framework version baseline
+## Layout
 
-- **Spring Boot:** Target **4.0.x** by default;
-- **Quarkus:** Target the current **3.x** line by default;
-- **Micronaut:** Target the current **4.x** line by default;
+| Path | Contents | Edit? |
+|------|----------|-------|
+| `.claude/skills/` | 171 skills in 7 categories (`java`, `claude-java`, `architecture&design`, `database`, `design-pattern`, `front-end`, `general`) | WRITE |
+| `.claude/commands/` | 16 slash commands (`/create-spec`, `/implement-issue`, `/profile`, …) | WRITE |
+| `.claude/agents/` | Empty — the 9 `robot-*` agents now live in `~/.claude/agents/` (global) | see note |
+| `.claude/rules/` | Language/framework coding rules loaded via `CLAUDE.md` | WRITE |
+| `CLAUDE.md` | Global instructions, synced to `~/.claude/CLAUDE.md` by `scripts/sync-claude-md.sh` | WRITE |
+| `CLAUDE.local.md` | Machine-local operating notes (routing table, current inventory) | WRITE |
+| `settings.json` | Shared Claude Code settings (permissions, hooks) | WRITE |
+| `.claude/settings.local.json` | Machine-local settings — gitignored, never share | no |
+| `OLD-CLAUDE(deprecated).md` | Historical reference | READ only |
 
-## Change workflow
+**Agents note:** the `robot-*` agents were promoted to `~/.claude/agents/` so every project
+sees them. The project-local copies under `.claude/agents/` are deleted on purpose — do not
+restore them unless a project needs an override.
 
-This project uses **OpenSpec** for structured change management and planning:
+## Agent team
 
-**GitHub Issues → OpenSpec → Agents + Skills**
+Nine agents, coordinator-led; the coordinator never writes application code itself.
 
-1. **GitHub Issues** - Track problems, features, and architectural decisions
-2. **OpenSpec** (`documentation/openspec/`) - Plan and coordinate implementation through:
-   - **Proposals** - Problem statements and solution approaches
-   - **Specs** - Requirements with Given/When/Then scenarios
-   - **Tasks** - Detailed implementation checklists
-3. **Agents + Skills** - Generate the actual cursor rules and agent skills
+| Agent | Role |
+|-------|------|
+| `robot-tech-lead` | Coordinator — plans/OpenSpec changes, delegates implementation |
+| `robot-architect` | ADRs, diagrams, design exploration, OpenSpec specs |
+| `robot-business-analyst` | Issues (GitHub/Jira), read-only alignment reviews |
+| `robot-java-coder` | Plain Java / Maven implementation |
+| `robot-java-spring-boot-coder` | Spring Boot 4.x |
+| `robot-java-quarkus-coder` | Quarkus 3.x |
+| `robot-java-micronaut-coder` | Micronaut 4.x |
+| `robot-java-performance` | Profiling/benchmarks — delegates fixes, never implements |
+| `robot-no-java` | Fallback for non-JVM work |
 
-**Key principle**: Complex changes (especially architectural ones) should be planned in OpenSpec before implementation to ensure thorough analysis and stakeholder alignment.
+## Command → agent routing
 
-## File structure
+| Command | Owner | Delegates to |
+|---------|-------|--------------|
+| `/create-issue`, `/update-issue`, `/review-alignment` | `robot-business-analyst` | — |
+| `/create-adr`, `/create-diagram`, `/explore-design`, `/create-spec`, `/close-spec` | `robot-architect` | — |
+| `/create-plan`, `/create-feature-branch`, `/create-worktree` | `robot-tech-lead` | — |
+| `/implement-issue`, `/implement-spec` | `robot-tech-lead` | java / spring-boot / quarkus / micronaut / no-java coder |
+| `/benchmark`, `/profile` | `robot-java-performance` | coder agents (performance agent never edits app code) |
+| `/kill-port` | — | utility |
 
-- `skills/` – Generated SKILLS release output and public registry source (READ only, never edit directly)
-- `.agents/skills/` – Temporary local generated skills for agent testing (generated by Maven, ignored by Git)
-- `.cursor/rules/` – Legacy Cursor rules (READ only; not produced by the default Maven install after generator consolidation)
-- `skills-generator/src/main/resources/` – XML rule sources (`skill-references/`, `skills/`, XSLT) and skill inventory (WRITE here to change rules and skills)
-- `skills-generator/` – Unified generator module: builds agent skills into `skills-generator/target/skills`, copies local output to `.agents/skills`, and refreshes `skills/` only through the explicit `release` profile (WRITE)
-- `documentation/guides/` – Contributor and user guides, including getting-started docs, inventories, and third-party references (WRITE)
-- `documentation/openspec/` – OpenSpec change management (proposals, specs, tasks) (WRITE)
-- `documentation/adr/` – Architecture Decision Records (WRITE)
-- `site-generator/content/` – Blog posts, courses, documentation (WRITE here to update website; regenerate `docs/` in the same change)
-- `docs/` – Generated static website for GitHub Pages (READ only; update only through the `site-update` Maven profile)
-- `README.md` – Default project README (WRITE); keep `README_ES.md` and `README_ZH.md` in sync when it changes
-- `documentation/guides/GETTING-STARTED-*.md` – Getting-started documentation; English files are the master source, so keep matching `_ES.md` and `_ZH.md` versions in sync when localized counterparts exist
+## Skill numbering (`.claude/skills/java/`)
 
-## Commands
+Skills are ordered by lifecycle so agents can reference them by number:
 
-```bash
-# Build and test everything
-./mvnw clean verify
+| Range | Topic |
+|-------|-------|
+| `001–005` | Inventories and installation of commands/agents |
+| `012–014` | Agile: epic, feature, user story |
+| `030–034` | Architecture: ADRs, diagrams, design exploration |
+| `041–045` | Planning: plan mode, OpenSpec, GitHub Issues, Jira, Azure DevOps |
+| `051–057` | Design techniques: TDD, parallel change, feature toggles, … |
+| `110–114` | Maven |
+| `121–128` | Java design, secure coding, concurrency, exceptions, generics |
+| `130–133` | Testing strategies |
+| `141–145` | Modern Java, functional, data-oriented, performance refactoring |
+| `151–164` | Performance (JMeter, Gatling) and profiling |
+| `170–183` | Documentation and observability (logging, Micrometer, OpenTelemetry) |
+| `300–323` | Spring Boot |
+| `400–423` | Quarkus |
+| `500–523` | Micronaut |
+| `701–707` | Technologies: OpenAPI, WireMock, fuzzing, SQL, MongoDB, Docker, hexagonal |
+| `801–813` | EU regulations and ISO 42001 |
 
-# Build and test only the unified generator module
-./mvnw clean verify -pl skills-generator
+Book-derived skills (`effective-java-book`, `modern-java-in-action-book`, `spring-in-action`, …)
+sit alongside the numbered ones without a prefix.
 
-# Validate Markdown documentation (requires JBang)
-jbang .github/scripts/MarkdownValidator.java --verbose .
+## Working rules
 
-# Generate and copy skills for local agent use without touching skills/
-./mvnw clean install -pl skills-generator
-
-# Refresh the public skills/ release output intentionally
-./mvnw clean install -pl skills-generator -P release
-
-# Serve the website locally (mirrors GitHub Pages path: http://localhost:8820/)
-./mvnw clean generate-resources jbake:inline -pl site-generator -P local-preview
-
-# Regenerate the website into docs/
-./mvnw clean generate-resources -pl site-generator -P site-update
-
-# Validate XML well-formedness after editing XML sources
-xmllint --noout <path-to-edited-file.xml>
-
-# Validate agent skills with the same formatter used in CI
-npx skill-check@latest skills --no-security-scan --format github
-
-# Install the skill scanner used by CI
-python -m pip install --upgrade cisco-ai-skill-scanner
-
-# Scan generated skills with behavioral strict policy
-skill-scanner scan-all ./skills --recursive --use-behavioral --policy strict --fail-on-severity high
-
-# OpenSpec change management (run from documentation/ directory)
-cd documentation/
-openspec list                        # List all changes and their progress
-openspec show <change-name>          # Show details of a specific change
-openspec validate --all              # Validate all changes meet requirements
-openspec new change <change-name>    # Create a new change
-openspec archive <change-name>       # Archive a completed change
-
-```
-
-## Skill acceptance prompt validation
-
-When regenerating agent skills, check `skills-generator/src/test/resources/gherkin/skills/acceptance-tests-prompts-skills.md` before promoting the change. If the regenerated local skill output under `.agents/skills/<skill-id>/SKILL.md` changes for a skill described in that file, execute only the listed prompt for that changed skill and verify the acceptance test passes. Do not execute prompts for unchanged skills or run the full prompt inventory by default.
-
-When adding a new skill Gherkin file under `skills-generator/src/test/resources/gherkin/skills/`, also update `skills-generator/src/test/resources/gherkin/skills/acceptance-tests-prompts-skills.md` in the same change with the matching prompt to execute that `.feature` file. Keep the entry grouped by skill id and use the existing `execute @...feature` format.
-
-Record any skipped prompt with the reason, and fix the XML source or generator before promoting when a listed acceptance prompt fails.
-
-## Website generation workflow
-
-1. Edit website sources under `site-generator/content/`, `site-generator/templates/`, or `site-generator/assets/`; never edit `docs/` directly.
-2. Run `./mvnw clean generate-resources -pl site-generator -P site-update` in the same change whenever website sources change.
-3. Review every generated `docs/` diff and verify it corresponds to a current source, template, or asset change.
-4. If regeneration reveals output drift from a source change committed earlier, trace it with `git log` or `git blame`, retain the generated correction, and explain that provenance in the commit or pull request.
-5. Commit the website source and generated `docs/` output together so GitHub Pages never lags behind its source.
+- **Skills:** one directory per skill containing `SKILL.md` with `name` + `description`
+  frontmatter. The `description` is the only thing Claude sees before loading — write it as
+  trigger phrases, not a summary.
+- **Commands:** one `.md` per command; state Purpose, Usage, Owning Agent, and delegation
+  targets so routing stays explicit.
+- **Rules:** `.claude/rules/*.md` are referenced from `CLAUDE.md`; keep them in English.
+- **Global sync:** after editing `CLAUDE.md`, run `bash scripts/sync-claude-md.sh` to push it
+  to `~/.claude/CLAUDE.md` (it backs up the previous version).
+- **Validation:** there is no build. "Verify" means: valid YAML frontmatter, unique skill
+  `name`, working relative links, and the skill actually triggering in a real session.
 
 ## Git workflow
 
-- **Conventional Commits**: Use conventional commit format for all commit messages
-- Format: `type(scope): description`
+Conventional Commits — `type(scope): description`.
 
-| Type | Typical use |
-|------|-------------|
-| **feat** | New behavior / user-facing capability |
-| **fix** | Bug fix |
-| **docs** | Documentation only |
-| **style** | Formatting, whitespace, etc. (no logic change) |
-| **refactor** | Internal change, same external behavior |
-| **perf** | Performance improvement |
-| **test** | Tests only |
-| **build** | Build system or dependencies (e.g. Maven, Gradle) |
-| **ci** | CI config (workflows, pipelines) |
-| **chore** | Maintenance, tooling, meta (when nothing else fits) |
-| **revert** | Reverts a previous commit |
-
-The [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) spec allows other types if your team agrees. **This repository’s commit-msg hook** accepts the types in the table above and requires a **scope** (see [`.pre-commit-config.yaml`](.pre-commit-config.yaml)).
-
-### AI-assisted commits
-
-When Cursor, Claude, Codex, or another AI tool authors or materially contributes to a commit, include a `Co-authored-by` trailer using the tool's documented Git identity:
-
-```text
-Co-authored-by: <tool-name> <tool-email>
-```
-
-Place the trailer after a blank line at the end of the commit message. Do not add an AI co-author when the tool only provided incidental assistance and did not contribute to the committed change.
-
-### Pre-commit hooks (recommended)
-
-This repository includes [pre-commit](https://pre-commit.com/) configuration at [`.pre-commit-config.yaml`](.pre-commit-config.yaml): YAML checks and a **commit-msg** hook that enforces the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) rules above (including a required **scope**).
-
-**Setup (once per clone):**
-
-```bash
-pip install pre-commit   # or: brew install pre-commit
-pre-commit install --install-hooks
-```
-
-The install registers both the default `pre-commit` stage and `commit-msg` hooks. To validate the latest commit message manually:
-
-```bash
-git log -1 --pretty=%B > /tmp/msg.txt
-pre-commit run conventional-pre-commit --hook-stage commit-msg --commit-msg-filename /tmp/msg.txt
-```
+| Type | Use |
+|------|-----|
+| `feat` | New skill, agent, or command |
+| `fix` | Correct a broken skill/rule/link |
+| `docs` | Documentation only |
+| `refactor` | Reorganize content, same behavior |
+| `chore` | Tooling, settings, maintenance |
 
 ## Boundaries
 
-- ✅ **Always do:** Choose validation based on the files changed. For Markdown-only documentation changes outside `site-generator/`, run `jbang .github/scripts/MarkdownValidator.java --verbose .` when JBang is available and inspect changed local links; do **not** run `./mvnw clean verify`. For Java, Maven, XML generator, or other build-affecting changes, run the relevant module verification or `./mvnw clean verify` before promoting. Edit XML in `skills-generator/src/main/resources/` (`skill-references/`, `skills/`) to change rules and skills, validate edited XML with `xmllint --noout <path-to-edited-file.xml>`, and follow PML Schema: [https://jabrena.github.io/pml/schemas/0.7.0/pml.xsd](https://jabrena.github.io/pml/schemas/0.7.0/pml.xsd). For local skill regeneration, use `./mvnw clean install -pl skills-generator` and test the generated output from `.agents/skills`; do not refresh `skills/` unless preparing an intentional release. For release skill changes, run `./mvnw clean install -pl skills-generator -P release`, then validate `skills/` with `npx skill-check@latest skills --no-security-scan --format github` and `skill-scanner scan-all ./skills --recursive --use-behavioral --policy strict --fail-on-severity high` when the scanner is available. For complex changes, create OpenSpec proposals first. When website sources change, regenerate and review `docs`, then commit source and output together. When you change `README.md`, update the translated READMEs (`README_ES.md`, `README_ZH.md`) in the same change. When you change an English `documentation/guides/GETTING-STARTED-*.md` file, update the matching `_ES.md` and `_ZH.md` files in the same change when they exist.
-- ⚠️ **Ask first:** Adding new XML rule files, modifying the XSLT stylesheet, changing site templates, architectural changes (use OpenSpec for planning)
-- 🚫 **Never do:** Edit `.cursor/rules/` or `docs/` directly, run `./mvnw clean verify` for Markdown-only documentation changes, commit secrets, skip applicable validation before promoting, bypass OpenSpec for major changes
+- ✅ **Always:** keep skill `description` fields trigger-oriented; keep `CLAUDE.md` and the
+  global copy in sync; document new commands with an owning agent.
+- ⚠️ **Ask first:** promoting/demoting agents between `~/.claude/agents/` and `.claude/agents/`;
+  renaming skill number ranges; changing `settings.json` hooks or permissions.
+- 🚫 **Never:** run `openspec init` here (knowledge repo, not a code project — stray
+  `openspec-*/` dirs are gitignored); commit `.claude/settings.local.json` or secrets; edit
+  `OLD-CLAUDE(deprecated).md` as if it were current.
