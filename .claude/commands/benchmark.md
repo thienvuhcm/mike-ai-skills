@@ -1,6 +1,16 @@
-# benchmark
+---
+description: 'Design and coordinate a reproducible Java performance test.'
+argument-hint: '[target]'
+model: 'inherit'
+agent: 'plinth-java-performance'
+tools:
+  - 'Read'
+  - 'Write'
+  - 'Edit'
+  - 'Bash'
+---
 
-## Purpose
+# benchmark
 
 Select and coordinate an appropriate Java performance test with reproducible workload, environment, thresholds, and result artifacts.
 
@@ -19,7 +29,7 @@ Select and coordinate an appropriate Java performance test with reproducible wor
 
 ## Owner and skills
 
-- Owner: `@robot-java-performance`
+- Owner: `@plinth-java-performance`
 - Associated skills: `@151-java-performance-jmeter`, `@152-java-performance-gatling`, and existing Maven/JMH guidance
 
 ## Tool selection
