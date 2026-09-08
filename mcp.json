@@ -1,0 +1,26 @@
+{
+    "mcpServers": {
+        "claude-code-docs": {
+          "type": "http",
+          "url": "https://code.claude.com/docs/mcp"
+        },
+        "javadocs": {
+            "type": "http",
+            "url": "https://www.javadocs.dev/mcp"
+        },
+        "shadcn": {
+          "command": "npx",
+          "args": ["shadcn@latest", "mcp"]
+        },
+        "playwright": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@playwright/mcp@latest"]
+        },
+        "chrome-devtools": {
+          "command": "npx",
+          "args": ["-y", "chrome-devtools-mcp@latest"]
+        }
+
+    }
+}
